@@ -1,11 +1,11 @@
-## zen-pharma-frontend
+## gh-pharma-frontend
 
-React 18 frontend for the Zen Pharma platform. Served via Nginx inside a Docker container and deployed to AWS EKS via GitOps (ArgoCD).
+React 18 frontend for the Gh Pharma platform. Served via Nginx inside a Docker container and deployed to AWS EKS via GitOps (ArgoCD).
 
 > **Companion repos:**
-> - [`zen-infra`](https://github.com/your-github-username/zen-infra) — Terraform for AWS infrastructure (EKS, RDS, ECR, IAM)
-> - [`zen-pharma-backend`](https://github.com/your-github-username/zen-pharma-backend) — Spring Boot microservices
-> - [`zen-gitops`](https://github.com/your-github-username/zen-gitops) — ArgoCD apps + Helm values
+> - [`gh-infra`](https://github.com/your-github-username/gh-infra) — Terraform for AWS infrastructure (EKS, RDS, ECR, IAM)
+> - [`gh-pharma-backend`](https://github.com/your-github-username/gh-pharma-backend) — Spring Boot microservices
+> - [`gh-gitops`](https://github.com/your-github-username/gh-gitops) — ArgoCD apps + Helm values
 
 ---
 
@@ -29,7 +29,7 @@ React 18 frontend for the Zen Pharma platform. Served via Nginx inside a Docker 
 ## Repository Structure
 
 ```
-zen-pharma-frontend/
+gh-pharma-frontend/
 ├── public/                  # Static assets
 ├── src/
 │   ├── components/          # Reusable UI components
@@ -42,7 +42,7 @@ zen-pharma-frontend/
 └── .github/
     └── workflows/
         ├── ci.yml                       # Full CI + DEV deploy + QA PR
-        └── _reusable-update-gitops.yml  # Reusable: update zen-gitops image tag
+        └── _reusable-update-gitops.yml  # Reusable: update gh-gitops image tag
 ```
 
 ---
@@ -100,7 +100,7 @@ docker run -p 80:80 pharma-ui:local
 | `AUTH_BASE_URL` | Auth service base path | `/api/auth` |
 | `ENV` | Environment name | `dev`, `qa`, `prod` |
 
-These are injected via the `configmap:` section in `zen-gitops/envs/<env>/values-pharma-ui.yaml` and mounted as a ConfigMap in Kubernetes.
+These are injected via the `configmap:` section in `gh-gitops/envs/<env>/values-pharma-ui.yaml` and mounted as a ConfigMap in Kubernetes.
 
 ---
 
@@ -118,13 +118,13 @@ The `ci.yml` workflow triggers on push to `develop` or `main`:
 7. Trivy image scan (HIGH/CRITICAL)
 8. ECR push → tag: sha-<7chars>
 9. Cosign keyless sign (GitHub OIDC → Fulcio → Rekor)
-10. Update envs/dev/values-pharma-ui.yaml in zen-gitops → ArgoCD auto-syncs dev
-11. Open QA promotion PR in zen-gitops
+10. Update envs/dev/values-pharma-ui.yaml in gh-gitops → ArgoCD auto-syncs dev
+11. Open QA promotion PR in gh-gitops
 ```
 
 **Authentication to AWS:** GitHub OIDC — no `AWS_ACCESS_KEY_ID` stored as a secret.
 
-See [`zen-infra/docs/CICD-IMPLEMENTATION.md`](https://github.com/your-github-username/zen-infra/blob/main/docs/CICD-IMPLEMENTATION.md) for full architecture details.
+See [`gh-infra/docs/CICD-IMPLEMENTATION.md`](https://github.com/your-github-username/gh-infra/blob/main/docs/CICD-IMPLEMENTATION.md) for full architecture details.
 
 ---
 
@@ -135,19 +135,19 @@ Set in **Settings → Secrets and variables → Actions**:
 | Secret | Description |
 |---|---|
 | `AWS_ACCOUNT_ID` | 12-digit AWS account ID |
-| `GITOPS_TOKEN` | GitHub PAT with `contents: write` on `your-github-username/zen-gitops` |
+| `GITOPS_TOKEN` | GitHub PAT with `contents: write` on `your-github-username/gh-gitops` |
 | `SEMGREP_APP_TOKEN` | Semgrep Cloud token (optional) |
 
 | Variable | Value |
 |---|---|
-| `GITOPS_REPO` | `your-github-username/zen-gitops` |
+| `GITOPS_REPO` | `your-github-username/gh-gitops` |
 
 ---
 
 ## Deployment
 
-The frontend is deployed as `pharma-ui` via the shared Helm chart in `zen-gitops/helm-charts/`. Nginx configuration and writable volume mounts (required by `readOnlyRootFilesystem: true`) are managed via the Helm values file.
+The frontend is deployed as `pharma-ui` via the shared Helm chart in `gh-gitops/helm-charts/`. Nginx configuration and writable volume mounts (required by `readOnlyRootFilesystem: true`) are managed via the Helm values file.
 
 Ingress routes `/` to the `pharma-ui` service. All `/api/*` requests are routed by Nginx to the backend api-gateway.
 
-See [`zen-infra/docs/FULL-DEPLOYMENT-GUIDE.md`](https://github.com/your-github-username/zen-infra/blob/main/docs/FULL-DEPLOYMENT-GUIDE.md) for the complete 4-stage deployment guide.
+See [`gh-infra/docs/FULL-DEPLOYMENT-GUIDE.md`](https://github.com/your-github-username/gh-infra/blob/main/docs/FULL-DEPLOYMENT-GUIDE.md) for the complete 4-stage deployment guide.
