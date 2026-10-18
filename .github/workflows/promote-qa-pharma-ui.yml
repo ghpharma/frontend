@@ -1,6 +1,6 @@
 name: Promote pharma-ui to QA
 
-# Triggered manually — picks up the image currently running in DEV and opens
+# Triggered manually  -— picks up the image currently running in DEV and opens
 # a PR in the GitOps repo to promote it to QA.
 
 on:
